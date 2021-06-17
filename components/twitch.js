@@ -20,8 +20,8 @@ var twitchObject = {
 router.post('/stream_twitch',function(req,res)
 {
 
-  let oauthResponseData = req.body.oauthResponseData;
-  let authorizationCodeTwitch = req.body.authorizationCodeTwitch;
+  let oauthResponseData = req.body.twitchObject;
+  // let authorizationCodeTwitch = req.body.authorizationCodeTwitch;
 
     axios
       .post(
@@ -44,7 +44,7 @@ router.post('/stream_twitch',function(req,res)
           headers: {
             Accept: "application/vnd.twitchtv.v5+json",
             Authorization:
-              "OAuth " + oauthResponseData.access_token,
+            "OAuth " + oauthResponseData.access_token,
             "Client-ID": twitchObject.clientId,
 
             // Client-Id: this.state.clientId,
@@ -54,19 +54,20 @@ router.post('/stream_twitch',function(req,res)
         axios
           .get("https://api.twitch.tv/kraken/user", configUserData)
           .then((response) => {
-            let data = response.data;
-            console.log(data);
-            // this.setState({ ...this.state, userObjectTwitch: data });
-            // console.log(this.state.userObjectTwitch);
+            let user_data = response.data;
+            console.log(user_data);
             axios
               .get(
-                `https://api.twitch.tv/helix/streams/key?broadcaster_id=${data._id}`,
+                `https://api.twitch.tv/helix/streams/key?broadcaster_id=${user_data._id}`,
                 config
               )
               .then((response) => {
                 let data = response.data;
                 console.log("GOT MY STREAM KEYYYYY", data);
-                res.send(data);
+                let responseObject = {};
+                responseObject['stream_data'] = data;
+                responseObject['user_data'] = user_data;
+                res.send(responseObject);
               })
               .catch((error) => {
                 console.log(error);
@@ -79,10 +80,7 @@ router.post('/stream_twitch',function(req,res)
       .catch((error) => {
         console.log(error);
       });
-
-
-    
-      });
+});
 
 router.post('',function(req,res)
 {

@@ -11,3 +11,8 @@
 // {
 
 // })
+
+var youtubeObject = 
+{
+    clientSecret:"IX-nAAJQpcnAkr7qk4NSnyjk",
+}
