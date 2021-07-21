@@ -5,5 +5,10 @@ var youtubeObject =
     apiKey:"AIzaSyC6oBQ6E83a4JkQBROAFcZIdZnU6kwzGps",
 }
 
+var authObject = 
+{
+    JWT_SECRET : "Lq6_LqRt0HLXLyeUuVjc",
+}
 
-module.exports = {youtubeObject};
+
+module.exports = {youtubeObject,authObject};
