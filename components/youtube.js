@@ -45,7 +45,7 @@ router.post("/get_access_token", async function (req, res) {
       {
         let results = await yt_auth.retrieve_refresh_token();
         if (results[0].refresh_token!==null){
-        let tokens = await yt_auth.get_new_access_token(results[0].refresh_token);
+        let tokens =  yt_auth.get_new_access_token(results[0].refresh_token);
         res.send({status: "200",tokens:tokens,error: null,});
         res.end();
         } 
