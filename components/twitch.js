@@ -16,6 +16,18 @@ var twitchObject = {
 }
 
 
+// router.post('/auth_twitch',async function(req,res)
+// {
+
+
+// })
+
+// router.post('/stream_twitch_2' ,async function(req,res)
+// {
+
+
+// })
+
 
 router.post('/stream_twitch',function(req,res)
 {

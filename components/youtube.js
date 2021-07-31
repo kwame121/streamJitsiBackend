@@ -31,6 +31,24 @@ router.post("/get_auth_url", async function (req, res) {
 });
 
 
+router.post('/get_stream_credentials',async function(req,res)
+{
+  try
+  {
+    let yt_auth = new YoutubeAuth();
+    let broadcastObject = req.body.broadcastObject;
+    let created_broadcast = await yt_auth.createBroadcast(broadcastObject);
+    res.send({status:'200',broadcast:created_broadcast});
+
+  }
+  catch(e)
+  {
+    console.error('Error occured when creating stream resources',e);
+    res.send({status:'500',broadcast:null});
+  }
+
+})
+
 
 router.post("/get_access_token", async function (req, res) {
   let yt_auth = new YoutubeAuth();
