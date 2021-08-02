@@ -43,11 +43,11 @@ router.post('/get_stream_credentials',async function(req,res)
   }
   catch(e)
   {
-    console.error('Error occured when creating stream resources',e);
+    console.log('Error occured when creating stream resources',e);
     res.send({status:'500',broadcast:null});
   }
 
-})
+});
 
 
 router.post("/get_access_token", async function (req, res) {
@@ -61,6 +61,7 @@ router.post("/get_access_token", async function (req, res) {
     {
       try
       {
+        console.log('failed, getting refresh token')
         let results = await yt_auth.retrieve_refresh_token();
         if (results[0].refresh_token!==null){
         let tokens =  yt_auth.get_new_access_token(results[0].refresh_token);
