@@ -14,7 +14,8 @@ var conn = mysql.createConnection({
 class YoutubeAuth {
   //INCOMPLETE CODEEEEE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!//
 create_auth_client() {
-  const oauth2Client = new google.auth.OAuth2(
+
+const oauth2Client = new google.auth.OAuth2(
     youtubeObject.clientId,
     youtubeObject.clientSecret,
     "http://localhost:3000/destinations/auth/youtube"
@@ -27,7 +28,8 @@ create_bind_request_body(livestream_id,broadcast_id)
 {
   return {
     "id": broadcast_id,
-    "streamId" : livestream_id 
+    "streamId" : livestream_id ,
+    "part":["id","snippet","contentDetails","status"]
   }
 }
 
@@ -176,7 +178,7 @@ async createBroadcast_Client(settings)
     let {id} = livestream_result.data;
     let broadcast_result = await service.liveBroadcasts.insert({
       part:[
-        "snippet,cdn,contentDetails,status"
+        "snippet,contentDetails,status"
       ],
       resource:this.create_broadcast_request_body(settings),
     });
@@ -197,53 +199,7 @@ async createBroadcast_Client(settings)
 
 }
 
-  async createBroadcast(settings) // we may not need this anymore...
-  {
-    try 
-    {
-      // let result = await this.retrieve_refresh_token();
-      // let refresh_token = result[0].refresh_token;
-      let result_access_token = await this.get_new_access_token('1//03z4jH-dUPywaCgYIARAAGAMSNwF-L9IrwL96Opy8jjkxAR0PvajD7J_E5ypTKLJqgzEMit2sep-y70YCy-RnLtAjdqLg5NrhRNg');//literally have to hardcode this.........
-      let access_token = result_access_token.access_token;
-      console.log('PROCESS COMPLETE',access_token);
 
-      let requestBody = this.create_request_body(settings);
-      console.log(requestBody);
-      let config = {
-        headers: {
-          'Authorization': 'Bearer '+access_token,
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        }
-      };
-
-      
-      let livestream_req = await axios.post(`https://youtube.googleapis.com/youtube/v3/liveStreams?part=snippet%2Ccdn%2CcontentDetails%2Cstatus&access_token=${access_token}&key=${youtubeObject.apiKey}`,{requestBody},config);
-      let livestreamObject = livestream_req.data;
-      console.dir(livestreamObject);
-      //afterwards create broadcast object
-      let request_body_broadcast = this.create_broadcast_request_body(settings);
-      let broadcast_req = await axios.post(`https://youtube.googleapis.com/youtube/v3/liveBroadcasts?part=snippet%2CcontentDetails%2Cstatus&onBehalfOfContentOwner=mine&access_token=${access_token}&key=${youtubeObject.apiKey}`,{request_body_broadcast},config);
-      let broadcastObject = broadcast_req.data;
-      console.dir(broadcastObject);
-
-      //afterwards bind livestream to broadcast
-      let bound_broadcast_req = await axios.post(`https://youtube.googleapis.com/youtube/v3/liveBroadcasts/bind?id=${broadcastObject.id}&part=snippet&onBehalfOfContentOwner=mine&streamId=${livestreamObject.id}&key=${youtubeObject.apiKey}`,{},config);
-      let bound_broadcast = bound_broadcast_req.data;
-      console.dir(bound_broadcast);
-
-      return Promise.resolve(bound_broadcast);
-
-    }
-    catch(e)
-    {
-      //lets assume this erorr occurs because of an invalid token...
-   
-      return Promise.reject(e);
-    }
-
-    
-  }
 
 }
 
