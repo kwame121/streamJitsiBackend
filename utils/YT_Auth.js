@@ -4,7 +4,6 @@ const { youtubeObject } = require("./constants.js");
 const { connection } = require("./db.js");
 const {moment} = require('moment');
 var mysql      = require('mysql');
-const { youtube } = require("googleapis/build/src/apis/youtube");
 var conn = mysql.createConnection({
   host     : 'localhost',
   user     : 'root',
@@ -21,6 +20,15 @@ create_auth_client() {
     "http://localhost:3000/destinations/auth/youtube"
   );
   return oauth2Client;
+}
+
+
+create_bind_request_body(livestream_id,broadcast_id)
+{
+  return {
+    "id": broadcast_id,
+    "streamId" : livestream_id 
+  }
 }
 
 create_request_body(settings)
@@ -58,7 +66,6 @@ create_broadcast_request_body(settings)
   {
     let {start_time,end_time,...rest}  = settings;
 
-    console.log(start_time);
     return{
       "snippet": {
         "title":settings.eventName_text ,
@@ -90,7 +97,7 @@ async retrieve_refresh_token() {
   conn.connect();
   let promise = new Promise((resolve,reject)=>
   {
-  conn.query("Select * from youtube_refresh_token order by refresh_token limit 1", function(err,results,fields)
+  conn.query("Select * from youtube_refresh_token ", function(err,results,fields)
   {
     if (err)
     {
@@ -122,12 +129,8 @@ async get_new_access_token(refresh_token) {
 
 async getProfileData(access_token) 
 {
-  const oauth2Client = new google.auth.OAuth2(
-    youtubeObject.clientId,
-    youtubeObject.clientSecret,
-    "http://localhost:3000/destinations/auth/youtube"
-  );
   
+  const oauth2Client = this.create_auth_client();
   oauth2Client.setCredentials({access_token:access_token});
   var oauth2 = google.oauth2({
     auth:oauth2Client,
@@ -151,7 +154,50 @@ async getProfileData(access_token)
   return promise;
 }
 
-  async createBroadcast(settings)
+
+async createBroadcast_Client(settings)
+{
+  try
+  {
+    let refresh_token_result = await this.retrieve_refresh_token();
+    let refresh_token = refresh_token_result[refresh_token_result.length-1].refresh_token;
+    let tokens  = await this.get_new_access_token(refresh_token);
+    let oauth2Client = this.create_auth_client();
+
+    oauth2Client.setCredentials({access_token:tokens.access_token,refresh_token:tokens.refresh_token,apiKey:youtubeObject.apiKey});
+    let service = google.youtube({version:'v3',auth:oauth2Client});
+
+    let livestream_result =  await service.liveStreams.insert({
+      part: [
+        "snippet,cdn,contentDetails,status"
+      ],
+      resource:this.create_request_body(settings),
+    });
+    let {id} = livestream_result.data;
+    let broadcast_result = await service.liveBroadcasts.insert({
+      part:[
+        "snippet,cdn,contentDetails,status"
+      ],
+      resource:this.create_broadcast_request_body(settings),
+    });
+    let broadcast_id = broadcast_result.data.id;
+    let bound_broadcast_result = await service.liveBroadcasts.bind(this.create_bind_request_body(livestream_id,broadcast_id));
+    let bound_broadcast = bound_broadcast_result.data;
+
+    //lets log this baby!
+    console.log(bound_broadcast);
+    return Promise.resolve(bound_broadcast);
+
+  }
+  catch(e)
+  {
+    console.error('error with client shit',e);
+    return Promise.reject(e);
+  }
+
+}
+
+  async createBroadcast(settings) // we may not need this anymore...
   {
     try 
     {

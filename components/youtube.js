@@ -37,7 +37,7 @@ router.post('/get_stream_credentials',async function(req,res)
   {
     let yt_auth = new YoutubeAuth();
     let broadcastObject = req.body.broadcastObject;
-    let created_broadcast = await yt_auth.createBroadcast(broadcastObject);
+    let created_broadcast = await yt_auth.createBroadcast_Client(broadcastObject);
     res.send({status:'200',broadcast:created_broadcast});
 
   }
@@ -63,11 +63,17 @@ router.post("/get_access_token", async function (req, res) {
       {
         console.log('failed, getting refresh token')
         let results = await yt_auth.retrieve_refresh_token();
-        if (results[0].refresh_token!==null){
-        let tokens =  yt_auth.get_new_access_token(results[0].refresh_token);
+        if (results[result.length-1].refresh_token!==null&&results.length>0)
+        {
+        let tokens =  yt_auth.get_new_access_token(results[result.length-1].refresh_token);
         res.send({status: "200",tokens:tokens,error: null,});
         res.end();
         } 
+        else
+        {
+          console.log('Error, lets cry now.')
+
+        }
       }
       catch(e)
       {
