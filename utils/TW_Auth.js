@@ -21,12 +21,12 @@ class TwitchAuth
             };
             let request = await axios.get(`https://api.twitch.tv/kraken/user`,config);
             let {data} = request;
-            Promise.resolve(data);
+            return Promise.resolve(data);
 
         }
         catch(e)
         {
-            console.error('Error occured while getting user',e);
+            console.error('Error occured while getting user');
             Promise.reject(e);
         }
     }
@@ -48,29 +48,30 @@ class TwitchAuth
             let request = await axios.get(`https://api.twitch.tv/helix/streams/key?broadcaster_id=${_id}`,config);
             let data = request.data;
             console.log(data);
-            Promise.resolve(data);
+            return Promise.resolve(data);
         }
         catch(e)
         {
-            console.error('Error occured while getting stream credentials',e);
-            Promise.reject(e);
+            console.error('Error occured while getting stream credentials');
+            return  Promise.reject(e);
         }
 
     }
 
-    async get_ingest_urls(streamKey)
+    async get_ingest_urls()
     {
         try
         {
-            let request  = axios.get(`https://ingest.twitch.tv/ingests`);
+            let request  = await axios.get(`https://ingest.twitch.tv/ingests`);
             let {data} = request;
             console.log(data);
-            Promise.resolve(data);
+            return Promise.resolve(data);
+            
         }
         catch(e)
         {
-            console.error('Error occured when getting ingestion urls',e);
-            Promise.reject(e);        
+            console.error('Error occured when getting ingestion urls');
+            return Promise.reject(e);        
         }
 
 
