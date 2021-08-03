@@ -10,5 +10,14 @@ var authObject =
     JWT_SECRET : "Lq6_LqRt0HLXLyeUuVjc",
 }
 
+var twitchObject =
+{
+    clientId:"h0rfqdr3ilgi6v6d4tcws0wtzl6cml",
+    oauthResponseData:{},
+    streamKey:"",
+    userObject:"",
+    authorizationCodeTwitch:"",
+    authorizationTwitchResponse: {},
+}
 
-module.exports = {youtubeObject,authObject};
+module.exports = {youtubeObject,authObject,twitchObject};
