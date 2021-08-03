@@ -181,7 +181,7 @@ async createBroadcast_Client(settings)
       resource:this.create_broadcast_request_body(settings),
     });
     let broadcast_id = broadcast_result.data.id;
-    let bound_broadcast_result = await service.liveBroadcasts.bind(this.create_bind_request_body(livestream_id,broadcast_id));
+    let bound_broadcast_result = await service.liveBroadcasts.bind(this.create_bind_request_body(id,broadcast_id));
     let bound_broadcast = bound_broadcast_result.data;
 
     //lets log this baby!
