@@ -9,6 +9,24 @@ class TwitchAuth
         this.auth_data = auth_data;
     }
 
+    static async get_token()
+    {// do i even need this...
+        try
+        {
+            let {access_token} = this.auth_data;
+            let request = await axios.post(`https://id.twitch.tv/oauth2/token?client_id=${twitchObject.clientId}&client_secret=${twitchObject.clientSecret}&grant_type=client_credentials`);
+            let {data} = request;
+            return Promise.resolve(data);
+
+        }
+        catch(e)
+        {
+            console.error('Error getting token',e);
+            return Promise.reject(e);
+
+        }
+    }
+
     async get_user(){
         try
         {
@@ -66,7 +84,6 @@ class TwitchAuth
             let {data} = request;
             console.log(data);
             return Promise.resolve(data);
-            
         }
         catch(e)
         {

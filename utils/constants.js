@@ -13,6 +13,7 @@ var authObject =
 var twitchObject =
 {
     clientId:"h0rfqdr3ilgi6v6d4tcws0wtzl6cml",
+    clientSecret:"9iyv343znh91asivljziyqjlzmgyyw",
     oauthResponseData:{},
     streamKey:"",
     userObject:"",
